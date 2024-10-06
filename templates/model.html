@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <style>
@@ -11,16 +11,21 @@
         }
 
         body {
-            /* Optional background styling */
-            background-color: #f1f1f1;
+               
+
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: 'Poppins',
+            Arial,
+            sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             color: #333;
+            transition: background 0.5s ease-in-out;
         }
 
         header {
@@ -31,11 +36,41 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
 
         header h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        header h1:hover {
+            transform: scale(1.05);
+        }
+
+        header ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        header ul li {
+            margin-left: 15px;
+        }
+
+        header ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        header ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .container {
@@ -55,25 +90,16 @@
             margin-bottom: 20px;
         }
 
-        /* Drop area styling */
-        .dropbox {
-            width: 100%;
-            height: 250px;
-            border: 3px dashed #7B68EE;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(123, 104, 238, 0.1);
-            color: #333;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+        input[type="file"] {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 2px solid #7B68EE;
             cursor: pointer;
+            transition: border-color 0.3s ease;
         }
 
-        .dropbox.dragover {
-            background-color: rgba(123, 104, 238, 0.2);
+        input[type="file"]:hover {
             border-color: #5D4CDB;
         }
 
@@ -98,6 +124,28 @@
             border-radius: 10px;
             background-color: rgba(123, 104, 238, 0.2);
             padding: 15px;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .fake-result {
+            color: red;
+            animation: flashRed 1s infinite alternate;
+        }
+
+        .real-result {
+            color: green;
+        }
+
+        .file-label {
+            font-size: 18px;
+            text-align: center;
         }
 
         .loader {
@@ -145,6 +193,16 @@
             }
         }
 
+        @keyframes flashRed {
+            from {
+                color: red;
+            }
+
+            to {
+                color: darkred;
+            }
+        }
+
         /* Responsive Design */
         @media screen and (max-width: 768px) {
             .container {
@@ -171,19 +229,14 @@
 
     <div class="container">
         <h2>Upload an audio file:</h2>
-
-        <!-- Dropbox for drag-and-drop functionality -->
-        <div class="dropbox" id="dropbox">Drag & Drop Audio File Here or Click to Upload</div>
-
-        <form id="upload_form" action="/model.html" method="POST" enctype="multipart/form-data" style="display: none;">
-            <input type="file" name="audio_file" id="audio_file" accept="audio/*" required>
+        <form id="upload_form" action="/model.html" method="POST" enctype="multipart/form-data">
+            <input type="file" name="audio_file" id="audio_file" required>
+            <br><br>
+            <div id="loader" class="loader" style="display: none;">
+                <img src="/static/loader.gif" alt="Loading...">
+            </div>
+            <input type="submit" id="submit_btn" value="Submit" onclick="showLoader()">
         </form>
-
-        <br><br>
-        <div id="loader" class="loader">
-            <img src="/static/loader.gif" alt="Loading...">
-        </div>
-        <input type="submit" id="submit_btn" value="Submit">
 
         <div class="audio-player">
             <audio controls id="audio_player">
@@ -191,55 +244,50 @@
                 Your browser does not support the audio element.
             </audio>
         </div>
+
+        {% if file_label %}
+        <div class="result">
+            <p class="file-label">{{ file_label }}</p>
+            {% if result_label %}
+            {% set result_parts = result_label.split(':') %}
+            <p>
+                <span class="black-text">{{ result_parts[0] }}:</span>
+                {% if "Fake" in result_parts[1] %}
+                <span class="fake-result">{{ result_parts[1] }}</span>
+                {% else %}
+                <span class="real-result">{{ result_parts[1] }}</span>
+                {% endif %}
+                {% if result_parts[2] %}
+                :<span class="fake-result">{{ result_parts[2] }}</span>
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+
     </div>
 
     <script>
-        const dropbox = document.getElementById('dropbox');
         const audioFileInput = document.getElementById('audio_file');
         const audioPlayer = document.getElementById('audio_player');
         const audioSource = document.getElementById('audio_source');
-        const loader = document.getElementById('loader');
+        const uploadForm = document.getElementById('upload_form');
         const submitBtn = document.getElementById('submit_btn');
-
-        // Handling drag and drop
-        dropbox.addEventListener('click', function () {
-            audioFileInput.click();
-        });
-
-        dropbox.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            dropbox.classList.add('dragover');
-        });
-
-        dropbox.addEventListener('dragleave', function () {
-            dropbox.classList.remove('dragover');
-        });
-
-        dropbox.addEventListener('drop', function (e) {
-            e.preventDefault();
-            dropbox.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            handleFile(file);
-        });
+        const loader = document.getElementById('loader');
 
         audioFileInput.addEventListener('change', function (event) {
             const file = event.target.files[0];
-            handleFile(file);
-        });
-
-        function handleFile(file) {
             const fileURL = URL.createObjectURL(file);
             audioSource.src = fileURL;
             audioPlayer.load();
-            // Optionally display the file name on the dropbox
-            dropbox.textContent = `Selected File: ${file.name}`;
-        }
+        });
 
-        document.getElementById('upload_form').addEventListener('submit', function () {
+        uploadForm.addEventListener('submit', function () {
             loader.style.display = 'block';
             submitBtn.disabled = true;
         });
     </script>
+
 </body>
 
 </html>
