@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Optional background styling */
+            background-color: #f1f1f1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background-color: #7B68EE;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .container {
+            margin: 50px auto;
+            width: 80%;
+            max-width: 800px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* Drop area styling */
+        .dropbox {
+            width: 100%;
+            height: 250px;
+            border: 3px dashed #7B68EE;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(123, 104, 238, 0.1);
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dropbox.dragover {
+            background-color: rgba(123, 104, 238, 0.2);
+            border-color: #5D4CDB;
+        }
+
+        input[type="submit"] {
+            padding: 10px 30px;
+            font-size: 18px;
+            background-color: #7B68EE;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #5D4CDB;
+        }
+
+        .audio-player {
+            margin-top: 20px;
+            border-radius: 10px;
+            background-color: rgba(123, 104, 238, 0.2);
+            padding: 15px;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .loader img {
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        footer {
+            background-color: #7B68EE;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            input[type="submit"] {
+                font-size: 16px;
+                padding: 8px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>VOICE DEEPFAKE DETECTION</h1>
+    </header>
+
+    <div class="container">
+        <h2>Upload an audio file:</h2>
+
+        <!-- Dropbox for drag-and-drop functionality -->
+        <div class="dropbox" id="dropbox">Drag & Drop Audio File Here or Click to Upload</div>
+
+        <form id="upload_form" action="/model.html" method="POST" enctype="multipart/form-data" style="display: none;">
+            <input type="file" name="audio_file" id="audio_file" accept="audio/*" required>
+        </form>
+
+        <br><br>
+        <div id="loader" class="loader">
+            <img src="/static/loader.gif" alt="Loading...">
+        </div>
+        <input type="submit" id="submit_btn" value="Submit">
+
+        <div class="audio-player">
+            <audio controls id="audio_player">
+                <source id="audio_source" src="#" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        const dropbox = document.getElementById('dropbox');
+        const audioFileInput = document.getElementById('audio_file');
+        const audioPlayer = document.getElementById('audio_player');
+        const audioSource = document.getElementById('audio_source');
+        const loader = document.getElementById('loader');
+        const submitBtn = document.getElementById('submit_btn');
+
+        // Handling drag and drop
+        dropbox.addEventListener('click', function () {
+            audioFileInput.click();
+        });
+
+        dropbox.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropbox.classList.add('dragover');
+        });
+
+        dropbox.addEventListener('dragleave', function () {
+            dropbox.classList.remove('dragover');
+        });
+
+        dropbox.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropbox.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+
+        audioFileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            handleFile(file);
+        });
+
+        function handleFile(file) {
+            const fileURL = URL.createObjectURL(file);
+            audioSource.src = fileURL;
+            audioPlayer.load();
+            // Optionally display the file name on the dropbox
+            dropbox.textContent = `Selected File: ${file.name}`;
+        }
+
+        document.getElementById('upload_form').addEventListener('submit', function () {
+            loader.style.display = 'block';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+
+</html>

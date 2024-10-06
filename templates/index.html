@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Deepfake Detection</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+        /* {% if background_image %}
+            background-image: url("{{ background_image }}");
+        {% else %}
+            background-color: #f1f1f1;
+        {% endif %} */
+        
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        color: #fff;
+    }
+
+        header {
+            background: linear-gradient(90deg, #6A5ACD, #483D8B);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeInDown 1s ease-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            animation: slideInLeft 1.5s ease-out;
+        }
+
+        header ul {
+            list-style: none;
+            display: flex;
+        }
+
+        header ul li {
+            margin-left: 20px;
+        }
+
+        header ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        header ul li a:hover {
+            color: #FFD700;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            text-align: center;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .invisible-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            transition: transform 0.3s ease;
+        }
+
+        .invisible-container:hover {
+            transform: translateY(-10px);
+        }
+
+        .homepage-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .homepage-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ddd;
+        }
+
+        .rectangle {
+            margin-top: 30px;
+        }
+
+        .get-started {
+            display: inline-block;
+            background-color: #FFD700;
+            color: #483D8B;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .get-started:hover {
+            background-color: #fff;
+            transform: scale(1.1);
+        }
+
+        footer {
+            background-color: #483D8B;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>VOICE DEEPFAKE DETECTION</h1>
+    </header>
+
+    <main>
+        <div class="invisible-container">
+            <div class="homepage-content">
+                <h2>Welcome to our Website</h2>
+                <p style="text-align: justify;">&emsp;Detect and prevent voice deepfake with our advanced "Voice
+                    Deepfake Detection" project. Using advanced technologies such as machine learning and audio
+                    analysis, our system can identify manipulated or synthetic voices to ensure the authenticity and
+                    integrity of audio recordings. Stay one step ahead of malicious voice manipulation and protect
+                    yourself against voice deepfake attacks.</p>
+            </div>
+            <div class="rectangle">
+                <a href="model.html" class="get-started">Get Started</a>
+            </div>
+        </div>
+    </main>
+
+  
+</body>
+
+</html>
